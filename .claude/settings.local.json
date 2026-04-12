@@ -3,7 +3,15 @@
     "allow": [
       "Bash(npm install:*)",
       "Bash(ls /c/Users/HP/Videos/programming/lpdc/*.* /c/Users/HP/Videos/programming/lpdc/.impeccable.md /c/Users/HP/Videos/programming/lpdc/CLAUDE.md)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:findrealestate.com)",
+      "WebFetch(domain:oliviaharperhomes.com)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(curl -s http://localhost:3000)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3002)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(cmd /c \"cd /d c:\\\\Users\\\\HP\\\\Videos\\\\programming\\\\lpdc && npx tsc --noEmit 2>&1\")",
+      "Bash(powershell -Command \"cd 'c:\\\\Users\\\\HP\\\\Videos\\\\programming\\\\lpdc'; npx tsc --noEmit 2>&1\")"
     ]
   }
 }

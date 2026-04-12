@@ -1,167 +1,225 @@
 'use client'
 
+import { forwardRef, type HTMLAttributes, type ReactNode } from 'react'
+import type React from 'react'
+import {
+  motion,
+  useReducedMotion,
+  type HTMLMotionProps,
+  type Variants,
+} from 'framer-motion'
+import Image from 'next/image'
 import Link from 'next/link'
-import { useRef } from 'react'
-import { motion, useInView, useReducedMotion } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
-const ease     = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number]
-const easeExpo = [0.19, 1,    0.22, 1   ] as [number, number, number, number]
+const EASE_EXPO: [number, number, number, number]   = [0.19, 1, 0.22, 1]
+const EASE_SMOOTH: [number, number, number, number] = [0.25, 0.46, 0.45, 0.94]
 
+const SPRING_CONFIG = {
+  type:       'spring' as const,
+  stiffness:  90,
+  damping:    18,
+  mass:       0.8,
+  restDelta:  0.005,
+}
+
+const fadeVariants: Variants = {
+  hidden:  { opacity: 0, filter: 'blur(8px)', y: 8  },
+  visible: { opacity: 1, filter: 'blur(0px)', y: 0  },
+}
+
+const IMAGES = [
+  { src: '/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg',                                              alt: 'UK residential property exterior'    },
+  { src: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&h=800&fit=crop&q=80',   alt: 'Contemporary UK house'               },
+  { src: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=800&fit=crop&q=80',   alt: 'Residential property in high-growth area' },
+  { src: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&h=800&fit=crop&q=80',   alt: 'UK city skyline'                     },
+]
+
+const AREA_CLASSES = [
+  'col-start-2 col-end-3 row-start-1 row-end-3',
+  'col-start-1 col-end-2 row-start-2 row-end-4',
+  'col-start-1 col-end-2 row-start-4 row-end-6',
+  'col-start-2 col-end-3 row-start-3 row-end-5',
+]
+
+/* ── ContainerStagger ────────────────────────── */
+const ContainerStagger = forwardRef<HTMLDivElement, HTMLMotionProps<'div'>>(
+  ({ transition, ...props }, ref) => (
+    <motion.div
+      ref={ref}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-8% 0px' }}
+      transition={{
+        staggerChildren: transition?.staggerChildren ?? 0.16,
+        delayChildren:   transition?.delayChildren   ?? 0.1,
+        ...transition,
+      }}
+      {...props}
+    />
+  )
+)
+ContainerStagger.displayName = 'ContainerStagger'
+
+/* ── ContainerAnimated ───────────────────────── */
+const ContainerAnimated = forwardRef<HTMLDivElement, HTMLMotionProps<'div'>>(
+  ({ transition, className, ...props }, ref) => {
+    const shouldReduce = useReducedMotion()
+    return (
+      <motion.div
+        ref={ref}
+        variants={
+          shouldReduce
+            ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
+            : fadeVariants
+        }
+        transition={{ ...SPRING_CONFIG, duration: 0.45, ...transition }}
+        className={className}
+        {...props}
+      />
+    )
+  }
+)
+ContainerAnimated.displayName = 'ContainerAnimated'
+
+/* ── GalleryGrid ─────────────────────────────── */
+const GalleryGrid = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'grid grid-cols-2 grid-rows-[50px_150px_50px_150px_50px] gap-3',
+        className
+      )}
+      {...props}
+    />
+  )
+)
+GalleryGrid.displayName = 'GalleryGrid'
+
+/* ── GalleryGridCell ─────────────────────────── */
+interface GalleryGridCellProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
+  index:     number
+  children?: React.ReactNode
+}
+
+const GalleryGridCell = forwardRef<HTMLDivElement, GalleryGridCellProps>(
+  ({ className, index, children, ...props }, ref) => {
+    const shouldReduce = useReducedMotion()
+    return (
+      <motion.div
+        ref={ref}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        /* Delight: subtle scale lift on hover */
+        whileHover={shouldReduce ? {} : { scale: 1.045 }}
+        transition={{
+          opacity: { duration: 0.55, delay: index * 0.14, ease: EASE_SMOOTH },
+          scale:   { duration: 0.4,  ease: EASE_SMOOTH },
+        }}
+        className={cn('group relative cursor-default overflow-hidden', AREA_CLASSES[index], className)}
+        {...props}
+      >
+        {children}
+        {/* Delight: sage veil reveals on hover — restrained, on-brand */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-sage-700/25 opacity-0 transition-opacity duration-400 group-hover:opacity-100"
+        />
+        {/* Delight: gold corner pip appears on hover */}
+        <div
+          aria-hidden
+          className="absolute bottom-2 right-2 h-3 w-3 border-b border-r border-gold-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        />
+      </motion.div>
+    )
+  }
+)
+GalleryGridCell.displayName = 'GalleryGridCell'
+
+/* ── CTASection ──────────────────────────────── */
 export function CTASection() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const isInView   = useInView(sectionRef, { once: true, margin: '-80px 0px' })
-  const prefersReduced = useReducedMotion()
-
-  const d = prefersReduced ? 0 : 1
+  const shouldReduce = useReducedMotion()
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative overflow-hidden bg-sage-700 py-28 lg:py-44"
-      aria-labelledby="cta-heading"
-    >
+    <section className="bg-neutral-50">
+      <div className="mx-auto grid w-full max-w-[1280px] grid-cols-1 items-center gap-12 px-6 py-24 md:grid-cols-2 lg:gap-24 lg:px-16 lg:py-36">
 
-      {/* ── Grain texture — matches hero material quality ──────────────── */}
-      <svg
-        className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.045]"
-        aria-hidden="true"
-      >
-        <filter id="cta-grain">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.68"
-            numOctaves="4"
-            stitchTiles="stitch"
-          />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#cta-grain)" />
-      </svg>
+        {/* ── Text side ──────────────────────── */}
+        <ContainerStagger>
 
-      {/*
-        ── Oversized opening quote — editorial typographic device.
-        Cormorant Garamond at 320px, 3% opacity. Clipped by overflow-hidden.
-        Luxury print convention; invisible to casual viewers, felt as depth.
-        Hidden on mobile (too close to content).
-      */}
-      <div
-        className="pointer-events-none absolute -top-16 left-[4%] hidden select-none font-display leading-none text-white opacity-[0.04] lg:block"
-        style={{ fontSize: 'clamp(12rem, 20vw, 22rem)' }}
-        aria-hidden="true"
-      >
-        &ldquo;
-      </div>
+          {/* Label */}
+          <ContainerAnimated>
+            <p className="mb-5 font-body text-xs font-medium tracking-[0.2em] uppercase text-sage-500">
+              03 / Get In Touch
+            </p>
+          </ContainerAnimated>
 
-      {/* ── Structural pillar accents — vertical gold bars, left & right ── */}
-      {/* Only visible when viewport is wide enough not to crowd content */}
-      <div
-        className="absolute left-8 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-2 xl:flex"
-        aria-hidden="true"
-      >
-        <div className="h-20 w-px bg-gold-400 opacity-20" />
-        <div className="h-1.5 w-1.5 rotate-45 bg-gold-400 opacity-30" />
-      </div>
-      <div
-        className="absolute right-8 top-1/2 hidden -translate-y-1/2 flex-col items-center gap-2 xl:flex"
-        aria-hidden="true"
-      >
-        <div className="h-1.5 w-1.5 rotate-45 bg-gold-400 opacity-30" />
-        <div className="h-20 w-px bg-gold-400 opacity-20" />
-      </div>
-
-      {/* ── Content ────────────────────────────────────────────────────── */}
-      <div className="container-site relative">
-        <div className="mx-auto max-w-4xl text-center">
-
-          {/* Eyebrow label */}
-          <motion.span
-            className="label-upper text-gold-400 block mb-10 tracking-[0.2em]"
-            initial={{ opacity: 0, y: 10 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.55, ease, delay: d * 0.1 }}
-          >
-            Start Your Investment Journey
-          </motion.span>
-
-          {/*
-            Headline — three deliberate lines, each its own entrance.
-            The middle line (italic gold) is the peak: slightly larger,
-            a different voice, the emotional centre of the page.
-            At max desktop size this reads ~5rem / 5.5rem / 5rem.
-          */}
-          <h2 id="cta-heading" className="mb-0">
-            <motion.span
-              className="block font-display font-light leading-[1.1] tracking-tight text-white"
-              style={{ fontSize: 'clamp(2.25rem, 5vw, 4.75rem)' }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.75, ease, delay: d * 0.2 }}
+          {/* Headline */}
+          <ContainerAnimated>
+            <h2
+              className="font-display font-light leading-tight tracking-tight text-neutral-800"
+              style={{ fontSize: 'clamp(2rem, 4vw, 4.25rem)' }}
             >
-              Property investment has
-            </motion.span>
+              Ready to start{' '}
+              <em className="not-italic text-sage-600">investing?</em>
+            </h2>
+          </ContainerAnimated>
 
-            {/* Key phrase — italic Cormorant in gold, slightly larger for drama */}
-            <motion.span
-              className="block font-display font-light italic leading-[1.05] tracking-tight text-gold-400"
-              style={{ fontSize: 'clamp(2.5rem, 5.75vw, 5.5rem)' }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.75, ease, delay: d * 0.33 }}
-            >
-              some of the highest returns
-            </motion.span>
+          {/* Gold rule */}
+          <ContainerAnimated>
+            <motion.div
+              aria-hidden
+              className="my-6 h-px origin-left bg-gold-400"
+              style={{ width: '3rem' }}
+              initial={shouldReduce ? false : { scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, delay: 0.35, ease: EASE_EXPO }}
+            />
+          </ContainerAnimated>
 
-            <motion.span
-              className="block font-display font-light leading-[1.1] tracking-tight text-white"
-              style={{ fontSize: 'clamp(2.25rem, 5vw, 4.75rem)' }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.75, ease, delay: d * 0.46 }}
-            >
-              of any asset class.
-            </motion.span>
-          </h2>
+          {/* Description */}
+          <ContainerAnimated>
+            <p className="mb-8 max-w-[42ch] font-body text-base leading-relaxed text-neutral-600">
+              We work with a selective group of investors. Whether you have a
+              specific property in mind or want to build a portfolio from
+              scratch, get in touch and we will take it from there.
+            </p>
+          </ContainerAnimated>
 
-          {/* Gold rule — grows from centre outward */}
-          <motion.span
-            className="mx-auto mt-10 mb-10 block h-px origin-center bg-gold-400"
-            style={{ width: '4rem' }}
-            initial={{ scaleX: 0 }}
-            animate={isInView ? { scaleX: 1 } : {}}
-            transition={{ duration: 1.0, ease: easeExpo, delay: d * 0.62 }}
-            aria-hidden="true"
-          />
-
-          {/* Subtext — tighter max-width for authority */}
-          <motion.p
-            className="mx-auto mb-12 max-w-md font-body text-lg leading-relaxed text-sage-200"
-            initial={{ opacity: 0, y: 16 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.65, ease, delay: d * 0.72 }}
-          >
-            Join a growing number of investors who trust Luli Properties to
-            source, manage, and grow their property portfolios across the UK.
-          </motion.p>
-
-          {/* CTAs */}
-          <motion.div
-            className="flex flex-wrap items-center justify-center gap-4"
-            initial={{ opacity: 0, y: 12 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, ease, delay: d * 0.85 }}
-          >
-            <Link href="/contact" className="btn-gold">
-              Register Your Interest
-            </Link>
+          {/* CTA button */}
+          <ContainerAnimated>
             <Link
-              href="/services"
-              className="btn font-body text-sm font-medium tracking-wide px-8 py-3.5 text-sage-100 border border-sage-500 transition-colors duration-300 hover:border-sage-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sage-700"
+              href="/contact"
+              className="group inline-flex items-center gap-2.5 bg-sage-500 px-7 py-3.5 font-body text-sm font-medium tracking-wide text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-sage-600 hover:shadow-[0_8px_24px_rgba(78,112,80,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2"
             >
-              Our Services
+              Register Your Interest
+              {/* Delight: arrow slides right on hover */}
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </Link>
-          </motion.div>
+          </ContainerAnimated>
 
-        </div>
+        </ContainerStagger>
+
+        {/* ── Gallery side ────────────────────── */}
+        <GalleryGrid>
+          {IMAGES.map((img, i) => (
+            <GalleryGridCell key={i} index={i}>
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                sizes="(max-width: 768px) 50vw, 22vw"
+                loading={i === 0 ? 'eager' : 'lazy'}
+              />
+            </GalleryGridCell>
+          ))}
+        </GalleryGrid>
+
       </div>
     </section>
   )

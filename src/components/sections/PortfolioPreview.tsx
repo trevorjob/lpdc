@@ -1,280 +1,293 @@
 'use client'
 
+import { useState, useEffect, useRef, useCallback, type TouchEvent } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { useRef } from 'react'
-import { motion, useInView, useReducedMotion } from 'framer-motion'
-import { cn } from '@/lib/utils'
-import { properties } from '@/data/properties'
-import type { Property } from '@/types'
+import { ArrowRight } from 'lucide-react'
 
-// Warm gradient placeholders — unique per property.
-// Replace each with a Next.js <Image fill objectFit="cover"> when photography is provided.
-const CARD_GRADIENTS = [
-  'linear-gradient(140deg, #C8B89A 0%, #A89070 50%, #8A7258 100%)',
-  'linear-gradient(140deg, #A8B8A0 0%, #88988A 50%, #6A7A6C 100%)',
-  'linear-gradient(140deg, #C8C0A8 0%, #A8A088 50%, #88806A 100%)',
+interface SlideData {
+  title:          string
+  subtitle:       string
+  description:    string
+  imageUrl:       string
+  projectedYield: string
+  status:         'Available' | 'Under Offer' | 'Sold'
+  slug:           string
+}
+
+const slides: SlideData[] = [
+  {
+    title:          'The Riverside Apartments',
+    subtitle:       'HMO Investment, Manchester',
+    description:
+      'Premium HMO development in Manchester\'s Salford Quays district. Fully refurbished and consistently at 97% occupancy, with strong yields backed by professional management.',
+    imageUrl:       '/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg',
+    projectedYield: '8.2%',
+    status:         'Available',
+    slug:           'the-riverside-apartments',
+  },
+  {
+    title:          'Laurel Grove Portfolio',
+    subtitle:       'Terraced Portfolio, Birmingham',
+    description:
+      'Three terraced houses in Birmingham\'s Jewellery Quarter. Below-market-value acquisition in a high-growth area with a decade of consistent capital appreciation.',
+    imageUrl:       'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&h=1200&fit=crop&q=80',
+    projectedYield: '7.6%',
+    status:         'Available',
+    slug:           'laurel-grove-portfolio',
+  },
+  {
+    title:          'Oakfield Semi-Detached',
+    subtitle:       'Semi-Detached, Leeds',
+    description:
+      'Sought-after Leeds suburb, acquired 18% below market value. Strong local rental demand and scope for light refurbishment to add immediate capital value.',
+    imageUrl:       'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&h=1200&fit=crop&q=80',
+    projectedYield: '6.8%',
+    status:         'Under Offer',
+    slug:           'oakfield-semi',
+  },
 ]
 
-const TYPE_LABELS: Record<Property['type'], string> = {
-  'hmo':           'HMO',
-  'semi-detached': 'Semi-Detached',
-  'terraced':      'Terraced',
-  'detached':      'Detached',
-  'flat':          'Flat',
-  'commercial':    'Commercial',
-}
+const SLIDE_DURATION  = 6000
+const TRANSITION_HALF = 400
 
-const STATUS_CONFIG: Record<Property['status'], { label: string; className: string }> = {
-  'available':   { label: 'Available',   className: 'status-available'   },
-  'sold':        { label: 'Sold',        className: 'status-sold'        },
-  'under-offer': { label: 'Under Offer', className: 'status-under-offer' },
-}
+export function PortfolioPreview() {
+  const [currentIndex,    setCurrentIndex]    = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [progress,        setProgress]        = useState(0)
+  const [isPaused,        setIsPaused]        = useState(false)
 
-// ── Easing ────────────────────────────────────────────────────────────────
-const ease = [0.25, 0.46, 0.45, 0.94] as [number, number, number, number]
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const progressRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const touchStartX = useRef(0)
+  const touchEndX   = useRef(0)
 
-// ── Card entrance variants ────────────────────────────────────────────────
-// Container staggers children; each card variant defines its own timing.
-const cardContainerVariants = {
-  hidden:   {},
-  visible:  { transition: { staggerChildren: 0.13, delayChildren: 0.1 } },
-}
+  const goToSlide = useCallback((index: number) => {
+    if (isTransitioning || index === currentIndex) return
+    setIsTransitioning(true)
+    setProgress(0)
+    setTimeout(() => {
+      setCurrentIndex(index)
+      setTimeout(() => setIsTransitioning(false), 50)
+    }, TRANSITION_HALF)
+  }, [isTransitioning, currentIndex])
 
-const cardVariants = {
-  hidden:  { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
-}
+  const goNext = useCallback(() => {
+    goToSlide((currentIndex + 1) % slides.length)
+  }, [currentIndex, goToSlide])
 
-// ── Header entrance variants ──────────────────────────────────────────────
-const headerContainerVariants = {
-  hidden:  {},
-  visible: { transition: { staggerChildren: 0.1 } },
-}
+  const goPrev = useCallback(() => {
+    goToSlide((currentIndex - 1 + slides.length) % slides.length)
+  }, [currentIndex, goToSlide])
 
-const headerItemVariants = {
-  hidden:  { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease } },
-}
+  useEffect(() => {
+    if (isPaused) return
+    progressRef.current = setInterval(() => {
+      setProgress(prev => Math.min(prev + 100 / (SLIDE_DURATION / 50), 100))
+    }, 50)
+    intervalRef.current = setInterval(goNext, SLIDE_DURATION)
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (progressRef.current) clearInterval(progressRef.current)
+    }
+  }, [currentIndex, isPaused, goNext])
 
-const ruleVariants = {
-  hidden:  { scaleX: 0, originX: '0%' },
-  visible: { scaleX: 1, transition: { duration: 0.9, ease: [0.19, 1, 0.22, 1] as [number, number, number, number], delay: 0.25 } },
-}
+  const handleTouchStart = (e: TouchEvent) => { touchStartX.current = e.targetTouches[0].clientX }
+  const handleTouchMove  = (e: TouchEvent) => { touchEndX.current   = e.targetTouches[0].clientX }
+  const handleTouchEnd   = () => {
+    const diff = touchStartX.current - touchEndX.current
+    if (Math.abs(diff) > 60) diff > 0 ? goNext() : goPrev()
+  }
 
-// ── PropertyCard ──────────────────────────────────────────────────────────
-interface PropertyCardProps {
-  property: Property
-  gradient: string
-}
+  const slide = slides[currentIndex]
 
-function PropertyCard({ property, gradient }: PropertyCardProps) {
-  const status = STATUS_CONFIG[property.status]
+  const textCls = `transition-[opacity,transform] duration-[400ms] ease-out ${
+    isTransitioning ? 'opacity-0 translate-y-2 pointer-events-none' : 'opacity-100 translate-y-0'
+  }`
+
+  const statusColor = slide.status === 'Available' ? 'text-sage-500' : 'text-gold-400'
 
   return (
-    // motion.div receives the card variant from the parent stagger container
-    <motion.div variants={cardVariants}>
-      <article
-        className={cn(
-          'property-card group',
-          // Gold glow overrides the default card-hover shadow via utilities layer priority
-          'hover:shadow-gold-glow',
-        )}
-        aria-label={`${property.name} — ${property.location}`}
-      >
+    <section
+      className="relative w-full overflow-hidden bg-neutral-50"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      aria-label="Investment portfolio preview"
+    >
+      <div className="flex min-h-[88vh] flex-col lg:flex-row">
 
-        {/* ── Image ───────────────────────────────────────────────── */}
-        <div className="relative overflow-hidden" style={{ aspectRatio: '16 / 10' }}>
+        {/* ── Content side ─────────────────────────── */}
+        <div className="relative flex flex-col justify-center overflow-hidden px-6 pb-16 pt-20 lg:w-[46%] lg:flex-none lg:px-16 lg:py-28">
 
-          {/* Gradient placeholder */}
-          <div
-            className="absolute inset-0 transition-transform duration-700 ease-smooth group-hover:scale-105"
-            style={{ background: gradient }}
-            aria-hidden="true"
-          />
+          {/* Ghost slide number */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute -right-4 bottom-0 select-none font-display text-[28vw] font-light leading-none text-neutral-100 lg:text-[14vw]"
+          >
+            {String(currentIndex + 1).padStart(2, '0')}
+          </span>
 
-          {/* Overlay link — large touch target, keyboard-navigable */}
-          <Link
-            href={`/portfolio/${property.slug}`}
-            className="absolute inset-0 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold-400"
-            aria-label={`View details for ${property.name}`}
-          />
-
-          {/* Status badge */}
-          <div className="absolute top-4 left-4 z-20 pointer-events-none">
-            <span className={status.className}>{status.label}</span>
-          </div>
-
-          {/* Yield badge */}
-          {property.projectedYield && (
-            <div className="absolute top-4 right-4 z-20 pointer-events-none">
-              <span className="font-body text-[10px] font-medium tracking-[0.12em] uppercase bg-white/95 backdrop-blur-sm text-sage-700 px-2.5 py-1">
-                {property.projectedYield} yield
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* ── Content ─────────────────────────────────────────────── */}
-        <div className="p-6 lg:p-7">
-
-          {/* Location + type */}
-          <div className="flex items-center gap-2.5 mb-3">
-            <span className="sage-tag">{property.location}</span>
-            <span className="label-upper text-neutral-500 text-[10px]">
-              {TYPE_LABELS[property.type]}
-            </span>
-          </div>
-
-          {/* Property name */}
-          <h3 className="heading-card mb-3 transition-colors duration-300 group-hover:text-sage-700">
-            {property.name}
-          </h3>
-
-          {/* Short description */}
-          <p className="text-sm font-body leading-relaxed text-neutral-600 mb-5 line-clamp-2">
-            {property.shortDescription}
+          {/* Section label */}
+          <p className="mb-10 font-body text-xs font-medium tracking-[0.2em] uppercase text-sage-500">
+            02 / Investment Portfolio
           </p>
 
-          {/* Specs row */}
-          <div className="flex items-center gap-5 mb-6 pb-5 border-b border-neutral-200">
-            <div className="text-center">
-              <div className="font-display text-xl font-medium text-neutral-800">
-                {property.bedrooms}
-              </div>
-              <div className="label-upper text-[10px] text-neutral-500 mt-0.5">Beds</div>
-            </div>
-
-            {property.bathrooms && (
-              <div className="text-center">
-                <div className="font-display text-xl font-medium text-neutral-800">
-                  {property.bathrooms}
-                </div>
-                <div className="label-upper text-[10px] text-neutral-500 mt-0.5">Baths</div>
-              </div>
-            )}
-
-            <div className="text-center">
-              <div className="font-display text-xl font-medium text-neutral-800">
-                {property.sqft.toLocaleString()}
-              </div>
-              <div className="label-upper text-[10px] text-neutral-500 mt-0.5">Sq Ft</div>
-            </div>
-          </div>
-
-          {/*
-            CTA button — hidden from keyboard (image overlay handles tab nav).
-            group/btn scopes arrow animation to button hover only, independent
-            of the outer card group.
-          */}
-          <Link
-            href={`/portfolio/${property.slug}`}
-            className="btn-outline-gold group/btn"
-            tabIndex={-1}
-            aria-hidden="true"
-          >
-            Learn More
-            <span
-              className="inline-block ml-1.5 transition-transform duration-300 ease-smooth group-hover/btn:translate-x-1"
-              aria-hidden="true"
-            >
-              →
+          {/* Slide counter */}
+          <div className={`mb-6 flex items-center gap-3 ${textCls}`}>
+            <span aria-hidden className="h-px w-8 bg-gold-400" />
+            <span className="font-body text-xs font-medium tracking-[0.2em] text-neutral-400">
+              {String(currentIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
             </span>
-          </Link>
-        </div>
-      </article>
-    </motion.div>
-  )
-}
-
-// ── Section ───────────────────────────────────────────────────────────────
-export function PortfolioPreview() {
-  const prefersReduced = useReducedMotion()
-
-  const headerRef  = useRef<HTMLDivElement>(null)
-  const gridRef    = useRef<HTMLDivElement>(null)
-  const footerRef  = useRef<HTMLDivElement>(null)
-
-  const headerInView = useInView(headerRef, { once: true, margin: '-60px 0px' })
-  const gridInView   = useInView(gridRef,   { once: true, margin: '-80px 0px' })
-  const footerInView = useInView(footerRef, { once: true, margin: '-40px 0px' })
-
-  const preview = properties.slice(0, 3)
-
-  return (
-    <section className="section-py bg-neutral-100">
-      <div className="container-site">
-
-        {/* ── Section header — label, heading, rule stagger in individually ── */}
-        <motion.div
-          ref={headerRef}
-          className="mb-10"
-          variants={headerContainerVariants}
-          initial={prefersReduced ? false : 'hidden'}
-          animate={headerInView ? 'visible' : 'hidden'}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-            <div>
-              <motion.span
-                className="label-upper text-sage-500 block mb-4"
-                variants={headerItemVariants}
-              >
-                Investment Portfolio
-              </motion.span>
-              <motion.h2
-                className="heading-section max-w-lg"
-                variants={headerItemVariants}
-              >
-                Assets sourced for performance.
-              </motion.h2>
-            </div>
-
-            <motion.div variants={headerItemVariants}>
-              <Link href="/portfolio" className="btn-sage shrink-0">
-                View Full Portfolio
-              </Link>
-            </motion.div>
           </div>
 
-          {/* Gold rule extends left→right after heading settles */}
-          <motion.span
-            className="block h-px bg-gold-400 origin-left mt-6"
-            style={{ width: '3rem' }}
-            variants={ruleVariants}
-            aria-hidden="true"
-          />
-        </motion.div>
+          {/* Title */}
+          <h2
+            className={`mb-2 font-display font-light leading-tight tracking-tight text-neutral-800 ${textCls}`}
+            style={{ fontSize: 'clamp(1.875rem, 3.5vw, 3.5rem)' }}
+          >
+            {slide.title}
+          </h2>
 
-        {/* ── Cards — single useInView on container, stagger children ── */}
-        <motion.div
-          ref={gridRef}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          variants={cardContainerVariants}
-          initial={prefersReduced ? false : 'hidden'}
-          animate={gridInView ? 'visible' : 'hidden'}
+          {/* Subtitle */}
+          <p className={`mb-6 font-body text-sm font-medium tracking-wide text-sage-500 ${textCls}`}>
+            {slide.subtitle}
+          </p>
+
+          {/* Gold rule */}
+          <div aria-hidden className={`mb-6 h-px w-10 bg-gold-400 ${textCls}`} />
+
+          {/* Description */}
+          <p className={`mb-8 max-w-[44ch] font-body text-sm leading-relaxed text-neutral-600 ${textCls}`}>
+            {slide.description}
+          </p>
+
+          {/* Metrics row */}
+          <div className={`mb-9 flex items-center gap-6 ${textCls}`}>
+            <div>
+              <p className="font-body text-[10px] font-medium tracking-[0.15em] uppercase text-neutral-400">
+                Projected Yield
+              </p>
+              <p className="font-display text-2xl font-light leading-snug text-neutral-800">
+                {slide.projectedYield}
+              </p>
+            </div>
+            <div aria-hidden className="h-8 w-px bg-neutral-200" />
+            <div>
+              <p className="font-body text-[10px] font-medium tracking-[0.15em] uppercase text-neutral-400">
+                Status
+              </p>
+              <p className={`font-body text-sm font-medium ${statusColor}`}>
+                {slide.status}
+              </p>
+            </div>
+          </div>
+
+          {/* CTAs */}
+          <div className={`mb-10 flex items-center gap-5 ${textCls}`}>
+            <Link
+              href={`/portfolio/${slide.slug}`}
+              className="group inline-flex items-center gap-2.5 bg-sage-500 px-6 py-3 font-body text-sm font-medium tracking-wide text-white transition-colors duration-300 hover:bg-sage-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2"
+            >
+              View Property
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+            </Link>
+            <Link
+              href="/portfolio"
+              className="font-body text-sm font-medium text-neutral-500 transition-colors duration-300 hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2"
+            >
+              All Properties
+            </Link>
+          </div>
+
+          {/* Navigation arrows */}
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={goPrev}
+              className="flex h-10 w-10 items-center justify-center border border-neutral-300 text-neutral-500 transition-colors duration-200 hover:border-neutral-600 hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500"
+              aria-label="Previous property"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={goNext}
+              className="flex h-10 w-10 items-center justify-center border border-neutral-300 text-neutral-500 transition-colors duration-200 hover:border-neutral-600 hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500"
+              aria-label="Next property"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+
+        </div>
+
+        {/* ── Image side ────────────────────────────── */}
+        <div
+          className="relative min-h-[55vw] flex-1 lg:min-h-0 lg:w-[54%] lg:flex-none"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
         >
-          {preview.map((property, i) => (
-            <PropertyCard
-              key={property.id}
-              property={property}
-              gradient={CARD_GRADIENTS[i] ?? CARD_GRADIENTS[0]}
-            />
+
+          {/* Stacked images — crossfade on index change */}
+          {slides.map((s, i) => (
+            <div
+              key={s.slug}
+              className={`absolute inset-0 transition-opacity duration-700 ease-out ${
+                i === currentIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+              aria-hidden={i !== currentIndex}
+            >
+              <Image
+                src={s.imageUrl}
+                alt={s.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 54vw"
+                priority={i === 0}
+              />
+            </div>
           ))}
-        </motion.div>
 
-        {/* ── Mobile footer link ──────────────────────────────────────── */}
-        <motion.div
-          ref={footerRef}
-          className="mt-12 flex justify-center sm:hidden"
-          initial={prefersReduced ? false : { opacity: 0, y: 16 }}
-          animate={footerInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.55, ease }}
-        >
-          <Link href="/portfolio" className="btn-sage">
-            View Full Portfolio
-          </Link>
-        </motion.div>
+          {/* Subtle dark tint */}
+          <div className="absolute inset-0 bg-neutral-900/12 pointer-events-none" aria-hidden />
+
+          {/* Gold corner accents */}
+          <div aria-hidden className="absolute left-5 top-5 h-9 w-9 border-l border-t border-gold-400/70" />
+          <div aria-hidden className="absolute bottom-5 right-5 h-9 w-9 border-b border-r border-gold-400/70" />
+
+        </div>
 
       </div>
+
+      {/* ── Progress bar ──────────────────────────── */}
+      <div className="flex border-t border-neutral-200 bg-white">
+        {slides.map((s, i) => (
+          <button
+            key={s.slug}
+            onClick={() => goToSlide(i)}
+            className="group flex flex-1 flex-col gap-1.5 px-4 py-4 text-left transition-colors duration-200 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-inset focus-visible:ring-2 focus-visible:ring-sage-500 lg:px-6 lg:py-5"
+            aria-label={`Go to ${s.title}`}
+            aria-current={i === currentIndex ? 'true' : undefined}
+          >
+            <div className="h-px w-full bg-neutral-200">
+              <div
+                className="h-full bg-sage-500"
+                style={{
+                  width:      i === currentIndex ? `${progress}%` : i < currentIndex ? '100%' : '0%',
+                  transition: i === currentIndex ? 'none' : 'width 400ms ease-out',
+                }}
+              />
+            </div>
+            <span className="truncate font-body text-xs text-neutral-400 transition-colors duration-200 group-hover:text-neutral-600">
+              {s.title}
+            </span>
+          </button>
+        ))}
+      </div>
+
     </section>
   )
 }

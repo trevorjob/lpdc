@@ -14,8 +14,8 @@ export const properties: Property[] = [
     sqft:             1850,
     bedrooms:         6,
     bathrooms:        3,
-    heroImage:        '/images/properties/riverside-hero.jpg',
-    images:           ['/images/properties/riverside-1.jpg', '/images/properties/riverside-2.jpg'],
+    heroImage:        '/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg',
+    images:           ['/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg'],
     investmentHighlights: [
       'Located in high-demand commuter corridor',
       'Fully refurbished to HMO compliance standards',
@@ -39,8 +39,8 @@ export const properties: Property[] = [
     sqft:             3200,
     bedrooms:         9,
     bathrooms:        4,
-    heroImage:        '/images/properties/laurel-hero.jpg',
-    images:           ['/images/properties/laurel-1.jpg'],
+    heroImage:        'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&h=1200&fit=crop&q=80',
+    images:           ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&h=1200&fit=crop&q=80'],
     investmentHighlights: [
       'Below-market-value acquisition',
       'High-growth Birmingham postcode',
@@ -64,8 +64,8 @@ export const properties: Property[] = [
     sqft:             1120,
     bedrooms:         3,
     bathrooms:        2,
-    heroImage:        '/images/properties/oakfield-hero.jpg',
-    images:           ['/images/properties/oakfield-1.jpg'],
+    heroImage:        'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&h=1200&fit=crop&q=80',
+    images:           ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&h=1200&fit=crop&q=80'],
     investmentHighlights: [
       'Acquired 18% below market value',
       'Strong local rental demand',
