@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(ls /c/Users/HP/Videos/programming/lpdc/*.* /c/Users/HP/Videos/programming/lpdc/.impeccable.md /c/Users/HP/Videos/programming/lpdc/CLAUDE.md)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

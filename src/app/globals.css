@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─────────────────────────────────────────────
+   CSS Custom Properties
+   ───────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* Animation */
+    --ease-smooth:   cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+    --dur-fast:      200ms;
+    --dur-base:      350ms;
+    --dur-slow:      600ms;
+    --dur-enter:     700ms;
+    --stagger:       80ms;
+
+    /* Parallax */
+    --parallax-speed: 0.15;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-neutral-50 font-body text-neutral-700;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+
+  ::selection {
+    @apply bg-sage-100 text-sage-700;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-sage-500 ring-offset-2;
+  }
+
+  /* Smooth scroll offset for sticky nav */
+  [id] {
+    scroll-margin-top: 5rem;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Layout Utilities
+   ───────────────────────────────────────────── */
+@layer components {
+  .container-site {
+    @apply mx-auto max-w-site w-full px-6 lg:px-10 xl:px-16;
+  }
+
+  .section-py {
+    @apply py-20 lg:py-32;
+  }
+
+  .section-py-sm {
+    @apply py-12 lg:py-20;
+  }
+
+  /* ─── Buttons ─────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2
+           font-body font-medium tracking-wide
+           transition-colors duration-300
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-sm  { @apply btn px-5  py-2    text-xs; }
+  .btn-md  { @apply btn px-8  py-3.5  text-sm; }
+  .btn-lg  { @apply btn px-10 py-4    text-base; }
+
+  .btn-sage {
+    @apply btn-md bg-sage-500 text-white hover:bg-sage-600
+           focus-visible:ring-sage-500;
+  }
+
+  .btn-gold {
+    @apply btn-md bg-gold-400 text-white hover:bg-gold-500
+           focus-visible:ring-gold-400;
+  }
+
+  .btn-outline-gold {
+    @apply btn-md border border-gold-400 text-gold-600
+           hover:bg-gold-50 hover:text-gold-700
+           focus-visible:ring-gold-400;
+  }
+
+  .btn-ghost {
+    @apply btn-md text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100
+           focus-visible:ring-neutral-400;
+  }
+
+  /* ─── Typography ──────────────────────────── */
+  .heading-display {
+    @apply font-display font-light leading-tight tracking-tight text-neutral-800;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+  }
+
+  .heading-hero {
+    @apply font-display text-5xl lg:text-7xl font-light leading-tight tracking-tight text-neutral-800;
+  }
+
+  .heading-section {
+    @apply font-display text-3xl lg:text-5xl font-light leading-tight tracking-tight text-neutral-800;
+  }
+
+  .heading-sub {
+    @apply font-display text-2xl lg:text-3xl font-normal leading-snug text-neutral-700;
+  }
+
+  .heading-card {
+    @apply font-display text-xl lg:text-2xl font-medium leading-snug text-neutral-800;
+  }
+
+  .body-lead {
+    @apply font-body text-lg leading-relaxed text-neutral-600;
+  }
+
+  .body-base {
+    @apply font-body text-base leading-relaxed text-neutral-600;
+  }
+
+  .label-upper {
+    @apply font-body text-xs font-medium tracking-[0.15em] uppercase text-neutral-500;
+  }
+
+  /* ─── Decorative elements ─────────────────── */
+  .gold-rule {
+    @apply block h-px bg-gold-400;
+    width: 3rem;
+    margin: 1.5rem 0;
+  }
+
+  .gold-rule-lg {
+    @apply block h-px bg-gold-400;
+    width: 6rem;
+    margin: 1.5rem 0;
+  }
+
+  .sage-tag {
+    @apply inline-block font-body text-xs font-medium tracking-[0.12em] uppercase
+           text-sage-600 bg-sage-50 px-3 py-1;
+  }
+
+  .status-available  { @apply sage-tag; }
+  .status-sold       { @apply inline-block font-body text-xs font-medium tracking-[0.12em] uppercase text-neutral-500 bg-neutral-100 px-3 py-1; }
+  .status-under-offer { @apply inline-block font-body text-xs font-medium tracking-[0.12em] uppercase text-gold-600 bg-gold-50 px-3 py-1; }
+
+  /* ─── Cards ───────────────────────────────── */
+  .property-card {
+    @apply bg-white shadow-card transition-all duration-500 ease-smooth
+           hover:shadow-card-hover hover:-translate-y-1;
+  }
+
+  /* ─── Section backgrounds ─────────────────── */
+  .bg-section-tint  { @apply bg-neutral-100; }
+  .bg-section-sage  { @apply bg-sage-50;     }
+  .bg-section-dark  { @apply bg-sage-700;    }
+}
+
+/* ─────────────────────────────────────────────
+   Scroll Reveal System
+   ───────────────────────────────────────────── */
+@layer utilities {
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity  var(--dur-enter) var(--ease-smooth),
+      transform var(--dur-enter) var(--ease-smooth);
+  }
+
+  .scroll-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger delays — apply alongside scroll-reveal */
+  .stagger-1 { transition-delay: calc(var(--stagger) * 1); }
+  .stagger-2 { transition-delay: calc(var(--stagger) * 2); }
+  .stagger-3 { transition-delay: calc(var(--stagger) * 3); }
+  .stagger-4 { transition-delay: calc(var(--stagger) * 4); }
+  .stagger-5 { transition-delay: calc(var(--stagger) * 5); }
+  .stagger-6 { transition-delay: calc(var(--stagger) * 6); }
+
+  /* Fade only variant — for images */
+  .scroll-reveal-fade {
+    opacity: 0;
+    transition: opacity var(--dur-enter) var(--ease-smooth);
+  }
+
+  .scroll-reveal-fade.is-visible {
+    opacity: 1;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Reduced Motion
+   ───────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal,
+  .scroll-reveal-fade {
+    transition: opacity 200ms ease !important;
+    transform: none !important;
+  }
+
+  .stagger-1, .stagger-2, .stagger-3,
+  .stagger-4, .stagger-5, .stagger-6 {
+    transition-delay: 0ms !important;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Custom Scrollbar — subtle, warm
+   ───────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F2EDE6; }
+::-webkit-scrollbar-thumb { background: #D5CBC0; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #B8ADA0; }

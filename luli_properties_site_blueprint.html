@@ -1,0 +1,196 @@
+
+<style>
+  .wrap { padding: 16px 0; }
+  .page-tabs { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab {
+    padding: 7px 14px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: 500;
+    border: 1px solid var(--color-border-tertiary); color: var(--color-text-secondary);
+    background: transparent; transition: all .15s;
+  }
+  .tab.active { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+  .page-meta { margin-bottom: 16px; }
+  .page-title { font-size: 16px; font-weight: 500; color: var(--color-text-primary); }
+  .page-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 3px; line-height: 1.5; }
+  .sections { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .row {
+    display: grid; grid-template-columns: 28px 20px 1fr auto;
+    gap: 12px; align-items: start; padding: 13px 14px;
+    background: var(--color-background-secondary);
+    border-bottom: 1px solid var(--color-border-tertiary);
+    transition: background .12s;
+  }
+  .row:last-child { border-bottom: none; }
+  .row:hover { background: var(--color-background-primary); }
+  .num {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 500; flex-shrink: 0;
+  }
+  .c-green  { background: #E1F5EE; color: #085041; }
+  .c-gold   { background: #FAEEDA; color: #633806; }
+  .c-gray   { background: #F1EFE8; color: #444441; }
+  .c-purple { background: #EEEDFE; color: #3C3489; }
+  .c-blue   { background: #E6F1FB; color: #0C447C; }
+  @media (prefers-color-scheme: dark) {
+    .c-green  { background: #085041; color: #9FE1CB; }
+    .c-gold   { background: #633806; color: #FAC775; }
+    .c-gray   { background: #444441; color: #D3D1C7; }
+    .c-purple { background: #26215C; color: #CECBF6; }
+    .c-blue   { background: #042C53; color: #85B7EB; }
+  }
+  .icon { font-size: 13px; margin-top: 5px; opacity: .6; }
+  .section-name { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .section-note { font-size: 12px; color: var(--color-text-secondary); line-height: 1.55; }
+  .badge {
+    font-size: 10px; padding: 3px 9px; border-radius: 20px;
+    font-weight: 500; white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+  }
+  .b-anchor  { background: #EEEDFE; color: #3C3489; }
+  .b-trust   { background: #E1F5EE; color: #085041; }
+  .b-content { background: #E6F1FB; color: #0C447C; }
+  .b-cta     { background: #FAEEDA; color: #633806; }
+  .b-std     { background: #F1EFE8; color: #444441; }
+  .b-dynamic { background: #FAECE7; color: #712B13; }
+  @media (prefers-color-scheme: dark) {
+    .b-anchor  { background: #26215C; color: #CECBF6; }
+    .b-trust   { background: #085041; color: #9FE1CB; }
+    .b-content { background: #042C53; color: #85B7EB; }
+    .b-cta     { background: #633806; color: #FAC775; }
+    .b-std     { background: #444441; color: #D3D1C7; }
+    .b-dynamic { background: #712B13; color: #F5C4B3; }
+  }
+  .note-bar {
+    margin-top: 16px; padding: 11px 14px; border-radius: var(--border-radius-md);
+    border: 1px solid var(--color-border-tertiary);
+    font-size: 12px; color: var(--color-text-secondary); line-height: 1.6;
+    background: var(--color-background-secondary);
+  }
+  .note-bar strong { color: var(--color-text-primary); font-weight: 500; }
+</style>
+
+<div class="wrap">
+  <div class="page-tabs" id="tabs"></div>
+  <div class="page-meta">
+    <div class="page-title" id="ptitle"></div>
+    <div class="page-desc" id="pdesc"></div>
+  </div>
+  <div class="sections" id="slist"></div>
+  <div class="note-bar" id="pnote"></div>
+</div>
+
+<script>
+const pages = [
+  {
+    id: "home",
+    title: "Home",
+    desc: "Goal: establish credibility instantly, give a taste of the portfolio, and funnel visitors toward getting in touch.",
+    note: "<strong>Flow logic:</strong> Hero commands attention → About snippet builds identity → Stats prove track record → Partners add credibility → Portfolio preview sparks interest → CTA converts.",
+    sections: [
+      { n:1, col:"c-gray",   icon:"▬", name:"Navbar", badge:"b-std", bl:"Always present", note:"Logo left. Links: Home, About Us, Investment Portfolio, Services, Contact Us. 'Book an Appointment' gold CTA button far right. Sticky, transparent over hero then solid white on scroll." },
+      { n:2, col:"c-purple", icon:"◈", name:"Hero section", badge:"b-anchor", bl:"Anchor", note:"Full-viewport hero. Bold headline — something like 'Making your assets and investment portfolio work for you.' Short subtext. Two CTAs: 'View Portfolio' (sage green) and 'Get In Touch' (champagne gold outline). Parallax background — aerial UK cityscape or premium property imagery. Calm, confident entrance animation." },
+      { n:3, col:"c-green",  icon:"▦", name:"About snippet", badge:"b-content", bl:"Identity", note:"Two columns. Left: short punchy paragraph about who Luli Properties are — UK property investment, high-quality assets, long-term capital growth. Right: a strong image. One CTA button: 'More About Us' linking to About page. Keep it brief — this is a taster, not the full story." },
+      { n:4, col:"c-gold",   icon:"◉", name:"Stats — Our Journey", badge:"b-trust", bl:"Trust signal", note:"4 animated counters on scroll: Assets Under Management, Tenants & Counting, Occupancy Rate (%), Sites in the UK. Same treatment as the care site — large typographic numbers, small labels, thin gold dividers. Pale sage green background section." },
+      { n:5, col:"c-green",  icon:"◎", name:"Partners strip", badge:"b-trust", bl:"Trust signal", note:"Horizontal logo strip — 'We are pleased to have worked with many trusted partners.' Logos scroll or sit in a clean grid. Placeholder logos for now. If Mr. Yuri has no partners yet, this section is prepped but hidden — easy to activate later." },
+      { n:6, col:"c-blue",   icon:"▦", name:"Investment portfolio preview", badge:"b-content", bl:"Core content", note:"3 property cards — photo, property name, short description (sq ft, bedrooms, location), 'Learn More' CTA. Stagger-in animation on scroll. Hover: subtle lift and gold border glow. Button below: 'View Full Portfolio' linking to Investment Portfolio page. All placeholder for now." },
+      { n:7, col:"c-gold",   icon:"→", name:"Are you interested? CTA", badge:"b-cta", bl:"Conversion", note:"Full-width bold CTA section. Large headline: 'Property investment has some of the highest returns of any asset class.' Subtext + 'Register Your Interest' button to Contact page. Deep sage green or champagne gold background. The main conversion moment before the footer." },
+      { n:8, col:"c-gray",   icon:"▬", name:"Footer", badge:"b-std", bl:"Standard", note:"Dark sage green background. Logo + tagline, nav links, contact email, legal links (Privacy Policy, T&Cs). Gold accents. Consistent across all pages." },
+    ]
+  },
+  {
+    id: "about",
+    title: "About Us",
+    desc: "Goal: build deep trust with investors — who is behind Luli Properties, what drives them, who they work with.",
+    note: "<strong>Design note:</strong> No team photos or partner logos yet — use clean circular placeholders. This page should feel like a premium investment prospectus. Confident, restrained, typographically strong.",
+    sections: [
+      { n:1, col:"c-gray",   icon:"▬", name:"Navbar", badge:"b-std", bl:"Always present", note:"Same sticky navbar." },
+      { n:2, col:"c-purple", icon:"◈", name:"Page hero", badge:"b-anchor", bl:"Anchor", note:"Minimal centred hero. Bold headline: 'About Our Business.' Short confident subtext. Soft parallax property/cityscape background. Gold thin rule beneath headline." },
+      { n:3, col:"c-green",  icon:"▦", name:"About the business", badge:"b-content", bl:"Core content", note:"Full editorial section. Left: rich text — who Luli Properties are, their philosophy, focus on below-market-value assets in high-growth areas. Right: large image with parallax drift. This is the heart of the page — give it room to breathe." },
+      { n:4, col:"c-green",  icon:"▦", name:"Meet the team", badge:"b-content", bl:"Human element", note:"2–3 team member cards. Circular placeholder avatars with a gold ring. Name, title, short bio. Sage green accent details. Swap placeholders for real photos when Mr. Yuri provides them." },
+      { n:5, col:"c-gold",   icon:"◎", name:"Our partners", badge:"b-trust", bl:"Trust signal", note:"Partner logo grid with a short intro line. Prepped and hidden by default — activate when/if partners are confirmed. Don't remove from the build, just toggle visibility." },
+      { n:6, col:"c-gold",   icon:"→", name:"CTA banner", badge:"b-cta", bl:"Conversion", note:"Full-width deep sage green section. Headline: 'Interested in investing with us?' Gold button to Contact page." },
+      { n:7, col:"c-gray",   icon:"▬", name:"Footer", badge:"b-std", bl:"Standard", note:"Same footer as all pages." },
+    ]
+  },
+  {
+    id: "portfolio",
+    title: "Investment Portfolio",
+    desc: "Goal: showcase all properties in a clean, browsable grid. Each card leads to a dedicated property detail page.",
+    note: "<strong>Build note:</strong> This page needs a dynamic template — one page layout that gets reused for every property. Build the template now with placeholder content, drop in real properties when Mr. Yuri provides them.",
+    sections: [
+      { n:1, col:"c-gray",   icon:"▬", name:"Navbar", badge:"b-std", bl:"Always present", note:"Same sticky navbar." },
+      { n:2, col:"c-purple", icon:"◈", name:"Page hero", badge:"b-anchor", bl:"Anchor", note:"Short minimal hero. Headline: 'Investment Portfolio.' One line intro. Clean, no parallax needed here — the grid is the star." },
+      { n:3, col:"c-blue",   icon:"▦", name:"Property grid", badge:"b-content", bl:"Core content", note:"Full property grid — 3 columns on desktop, 1 on mobile. Each card: large property photo, property name in bold, location tag, short description (sq ft, bedrooms, type), 'Learn More' gold CTA button. Scroll-triggered stagger animation. Placeholder cards for now — 3 to 6 cards minimum to show the layout." },
+      { n:4, col:"c-gold",   icon:"→", name:"CTA banner", badge:"b-cta", bl:"Conversion", note:"Below the grid. 'Are you interested in one of our properties? Register your interest.' Button to Contact page." },
+      { n:5, col:"c-gray",   icon:"▬", name:"Footer", badge:"b-std", bl:"Standard", note:"Same footer." },
+    ]
+  },
+  {
+    id: "property",
+    title: "Single Property (template)",
+    desc: "Goal: showcase one property in full detail and convert the visitor into a lead. This is a dynamic template reused for every property.",
+    note: "<strong>Important:</strong> Build this as a single reusable template with dynamic data. Every property in the portfolio links here. When Mr. Yuri adds new properties, no new pages need to be built — just new data entries.",
+    sections: [
+      { n:1, col:"c-gray",   icon:"▬", name:"Navbar", badge:"b-std", bl:"Always present", note:"Same sticky navbar." },
+      { n:2, col:"c-purple", icon:"◈", name:"Property hero / image gallery", badge:"b-anchor", bl:"Anchor", note:"Large full-width hero image of the property. Optional: 2–3 image thumbnails below for a mini gallery. Property name in large type overlaid or just below. Location tag in sage green." },
+      { n:3, col:"c-blue",   icon:"▦", name:"Property details", badge:"b-content", bl:"Core content", note:"Two-column layout. Left: full description, key specs (sq ft, bedrooms, type — HMO / semi-detached / terrace etc.), location details, investment highlights. Right: a clean specs card with gold border — size, bedrooms, type, status (available/sold). Clean typographic layout, lots of white space." },
+      { n:4, col:"c-green",  icon:"▦", name:"Investment highlights", badge:"b-content", bl:"Supporting content", note:"3–4 bullet points or small cards highlighting why this property is a strong investment — projected yield, location growth, refurbishment status, occupancy rate. Sage green icon accents." },
+      { n:5, col:"c-gold",   icon:"→", name:"Are you interested? CTA", badge:"b-cta", bl:"Conversion", note:"Full-width CTA section. 'Interested in this investment? Find out more.' Large gold button to Contact page. This is the key conversion moment for every property page." },
+      { n:6, col:"c-gray",   icon:"▬", name:"Footer", badge:"b-std", bl:"Standard", note:"Same footer." },
+    ]
+  },
+  {
+    id: "services",
+    title: "Services",
+    desc: "Goal: explain the two things Luli Properties offers — direct investment opportunities and building a personalised portfolio for clients.",
+    note: "<strong>Structure note:</strong> Services has two sub-pages — Investment and Build Your Portfolio. The main Services page is an overview that introduces both and links to each. Each sub-page goes deeper.",
+    sections: [
+      { n:1, col:"c-gray",   icon:"▬", name:"Navbar", badge:"b-std", bl:"Always present", note:"Same sticky navbar." },
+      { n:2, col:"c-purple", icon:"◈", name:"Page hero", badge:"b-anchor", bl:"Anchor", note:"Minimal hero. Headline: 'Our Services.' Short intro line." },
+      { n:3, col:"c-blue",   icon:"▦", name:"Services overview — 2 cards", badge:"b-content", bl:"Core content", note:"Two large feature cards side by side. Card 1: Investment — intro text, link to Investment sub-page. Card 2: Build Your Portfolio — intro text, link to that sub-page. Clean, editorial, gold accent borders." },
+      { n:4, col:"c-blue",   icon:"▦", name:"Investment sub-section", badge:"b-content", bl:"Sub-page content", note:"Full explanation of the investment offering. What Luli Properties does, what investors can expect, how it works. Ends with a CTA to Contact page." },
+      { n:5, col:"c-blue",   icon:"▦", name:"Build Your Portfolio sub-section", badge:"b-content", bl:"Sub-page content", note:"Personalised portfolio planning service. Includes: short intro, the 5-step process (reach out → expert call → property search → buying support → relationship grows) displayed as collapsible accordion steps. Small enquiry form below. CTA to Contact page." },
+      { n:6, col:"c-gold",   icon:"→", name:"CTA banner", badge:"b-cta", bl:"Conversion", note:"'Ready to start building your portfolio? Let's talk.' Button to Contact page." },
+      { n:7, col:"c-gray",   icon:"▬", name:"Footer", badge:"b-std", bl:"Standard", note:"Same footer." },
+    ]
+  },
+  {
+    id: "contact",
+    title: "Contact Us",
+    desc: "Goal: catch every type of lead — general enquiry, investment interest, appointment booking — in one clean page.",
+    note: "<strong>UX note:</strong> Everything on the site funnels here. Keep the form simple and the page calm. Don't overwhelm. 'Book an Appointment' can be a subject option in the form dropdown — no need for a separate booking page.",
+    sections: [
+      { n:1, col:"c-gray",   icon:"▬", name:"Navbar", badge:"b-std", bl:"Always present", note:"Same sticky navbar." },
+      { n:2, col:"c-purple", icon:"◈", name:"Page hero", badge:"b-anchor", bl:"Anchor", note:"Short warm hero. Headline: 'Get In Touch.' Subtext: 'Whether you're looking to invest or want to know more about our services, we'd love to hear from you.'" },
+      { n:3, col:"c-blue",   icon:"▦", name:"Form + contact info", badge:"b-content", bl:"Core content", note:"Two-column layout. Left: contact form — Name, Email, Phone, Subject dropdown (General Enquiry / Investment Interest / Build My Portfolio / Book an Appointment), Message, Send button in sage green. Right: company info — address, email, phone, with gold left-rule accents on each detail." },
+      { n:4, col:"c-green",  icon:"◎", name:"Office map", badge:"b-content", bl:"Location", note:"Contained Google Maps embed showing the UK office location. Rounded card, clean styling. Placeholder until Mr. Yuri confirms the address." },
+      { n:5, col:"c-gray",   icon:"▬", name:"Footer", badge:"b-std", bl:"Standard", note:"Same footer as all pages." },
+    ]
+  }
+];
+
+let active = "home";
+
+function render() {
+  const p = pages.find(x => x.id === active);
+  document.getElementById("ptitle").textContent = p.title;
+  document.getElementById("pdesc").textContent = p.desc;
+  document.getElementById("pnote").innerHTML = p.note;
+  document.getElementById("tabs").innerHTML = pages.map(pg =>
+    `<button class="tab ${pg.id===active?'active':''}" onclick="go('${pg.id}')">${pg.title}</button>`
+  ).join("");
+  document.getElementById("slist").innerHTML = p.sections.map(s => `
+    <div class="row">
+      <div class="num ${s.col}">${s.n}</div>
+      <div class="icon">${s.icon}</div>
+      <div>
+        <div class="section-name">${s.name}</div>
+        <div class="section-note">${s.note}</div>
+      </div>
+      <span class="badge ${s.badge}">${s.bl}</span>
+    </div>
+  `).join("");
+}
+
+function go(id) { active = id; render(); }
+render();
+</script>
