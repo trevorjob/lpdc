@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { Logo } from '@/components/ui/Logo'
 
 const NAV_LINKS = [
   // { href: '/about',     label: 'About'     },
@@ -42,18 +43,7 @@ export function Navbar() {
         <div className="mx-auto flex h-[68px] max-w-[1280px] items-center justify-between px-6 lg:px-16">
 
           {/* Logo */}
-          <Link
-            href="/"
-            className="group flex items-baseline gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-400"
-          >
-            <span className="font-display text-[22px] font-light tracking-[0.22em] text-white transition-opacity duration-300 group-hover:opacity-75">
-              LULI
-            </span>
-            <span aria-hidden className="h-3.5 w-px bg-gold-400/50" />
-            <span className="font-body text-[10px] font-medium tracking-[0.22em] uppercase text-white/50 transition-colors duration-300 group-hover:text-white/80">
-              Properties
-            </span>
-          </Link>
+          <Logo variant="dark" iconSize={34} />
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-8 md:flex" aria-label="Main navigation">

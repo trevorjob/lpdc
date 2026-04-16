@@ -14,8 +14,8 @@ export const properties: Property[] = [
     sqft:             1850,
     bedrooms:         6,
     bathrooms:        3,
-    heroImage:        '/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg',
-    images:           ['/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg'],
+    heroImage:        'https://images.unsplash.com/photo-1578687047263-631a67f01e0d?w=1200&h=800&fit=crop&q=80',
+    images:           ['https://images.unsplash.com/photo-1578687047263-631a67f01e0d?w=1200&h=800&fit=crop&q=80'],
     investmentHighlights: [
       'Located in high-demand commuter corridor',
       'Fully refurbished to HMO compliance standards',
@@ -39,8 +39,8 @@ export const properties: Property[] = [
     sqft:             3200,
     bedrooms:         9,
     bathrooms:        4,
-    heroImage:        'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&h=1200&fit=crop&q=80',
-    images:           ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&h=1200&fit=crop&q=80'],
+    heroImage:        'https://images.unsplash.com/photo-1652013368406-ddeac5542742?w=1200&h=800&fit=crop&q=80',
+    images:           ['https://images.unsplash.com/photo-1652013368406-ddeac5542742?w=1200&h=800&fit=crop&q=80'],
     investmentHighlights: [
       'Below-market-value acquisition',
       'High-growth Birmingham postcode',
@@ -64,8 +64,8 @@ export const properties: Property[] = [
     sqft:             1120,
     bedrooms:         3,
     bathrooms:        2,
-    heroImage:        'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&h=1200&fit=crop&q=80',
-    images:           ['https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&h=1200&fit=crop&q=80'],
+    heroImage:        'https://images.unsplash.com/photo-1710883727446-0bf5692fd709?w=1200&h=800&fit=crop&q=80',
+    images:           ['https://images.unsplash.com/photo-1710883727446-0bf5692fd709?w=1200&h=800&fit=crop&q=80'],
     investmentHighlights: [
       'Acquired 18% below market value',
       'Strong local rental demand',

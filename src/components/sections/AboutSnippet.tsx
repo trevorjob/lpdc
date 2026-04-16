@@ -75,7 +75,7 @@ const stats = [
   { icon: <Building2 className="h-5 w-5" />, value: 12,  suffix: '+',  label: 'Properties Sourced' },
   { icon: <Users className="h-5 w-5" />,     value: 97,  suffix: '%',  label: 'Average Occupancy'  },
   { icon: <BarChart2 className="h-5 w-5" />, value: 8,   suffix: '%+', label: 'Average Yield'      },
-  { icon: <Award className="h-5 w-5" />,     value: 3,   suffix: '',   label: 'UK Cities Active'   },
+  { icon: <Award className="h-5 w-5" />,     value: 8,   suffix: '',   label: 'UK Cities Active'   },
 ]
 
 export function AboutSnippet() {
@@ -138,7 +138,7 @@ export function AboutSnippet() {
 
         {/* Header */}
         <motion.div className="mb-4 flex flex-col items-center" variants={itemVariants}>
-          <p className="mb-3 font-body text-xs font-medium tracking-[0.2em] uppercase text-sage-500">
+          <p className="mb-3 font-body text-xs font-medium uppercase tracking-[0.2em] text-sage-500">
             About Us
           </p>
 
@@ -224,8 +224,8 @@ export function AboutSnippet() {
                 whileHover={shouldReduce ? {} : { scale: 1.02, transition: { duration: 0.4, ease: EASE_SMOOTH } }}
               >
                 <Image
-                  src="/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg"
-                  alt="Contemporary UK residential property representing the Luli Properties portfolio"
+                  src="https://images.unsplash.com/photo-1692189321186-dea223220662?w=600&h=800&fit=crop&q=80"
+                  alt="UK residential property front door representing the Luli Properties portfolio"
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 80vw, 280px"
@@ -350,9 +350,9 @@ function ServiceItem({ icon, title, description, variants, delay, direction }: S
         {description}
       </p>
 
-      <div className="mt-2.5 flex items-center gap-1 pl-[3.25rem] font-body text-xs font-medium text-sage-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+      {/* <div className="mt-2.5 flex items-center gap-1 pl-[3.25rem] font-body text-xs font-medium text-sage-500 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
         Learn more <ArrowRight className="h-3 w-3" />
-      </div>
+      </div> */}
     </motion.div>
   )
 }
@@ -395,7 +395,7 @@ function StatCounter({ icon, value, suffix, label, delay }: StatCounterProps) {
       }}
       whileHover={{ y: -4, transition: { duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] } }}
     >
-      <div className="mb-4 flex h-12 w-12 items-center justify-center bg-sage-500/8 text-sage-500 transition-colors duration-300 group-hover:bg-sage-500/15">
+      <div className="bg-sage-500/8 mb-4 flex h-12 w-12 items-center justify-center text-sage-500 transition-colors duration-300 group-hover:bg-sage-500/15">
         {icon}
       </div>
 

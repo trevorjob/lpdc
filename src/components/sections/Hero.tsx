@@ -24,7 +24,7 @@ export function Hero() {
         muted
         loop
         playsInline
-        poster="/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg"
+        poster="https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=1920&h=1080&fit=crop&q=80"
         className="absolute inset-0 h-full w-full object-cover"
       >
         <source src="/videos/hero.mp4" type="video/mp4" />
@@ -50,7 +50,7 @@ export function Hero() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.1, ease: EASE_SMOOTH }}
           >
-            Luli Properties, UK Property Investment
+            luli properties & dev.co.ltd
           </motion.p>
 
           {/* Headline — line reveal */}

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { WavePath } from '@/components/ui/wave-path'
+import { Logo } from '@/components/ui/Logo'
 
 const NAV_LINKS = [
   { href: '/',          label: 'Home'      },
@@ -21,18 +22,7 @@ export function Footer() {
 
           {/* Brand */}
           <div>
-            <Link
-              href="/"
-              className="group inline-flex items-baseline gap-2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-400"
-            >
-              <span className="font-display text-[22px] font-light tracking-[0.22em] text-white transition-opacity duration-300 group-hover:opacity-75">
-                LULI
-              </span>
-              <span aria-hidden className="h-3.5 w-px bg-gold-400/50" />
-              <span className="font-body text-[10px] font-medium uppercase tracking-[0.22em] text-white/50 transition-colors duration-300 group-hover:text-white/80">
-                Properties
-              </span>
-            </Link>
+            <Logo variant="dark" iconSize={38} />
 
             <p className="mt-5 max-w-[30ch] font-body text-sm leading-relaxed text-white/45">
               UK residential property investment. Sourcing below-market-value assets for a selective group of investors.
@@ -72,16 +62,16 @@ export function Footer() {
 
             <div className="space-y-3">
               <a
-                href="mailto:hello@luliproperties.co.uk"
+                href="mailto:hello@lpdc.estate"
                 className="block font-body text-[13px] text-white/50 transition-colors duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-400"
               >
-                hello@luliproperties.co.uk
+                hello@lpdc.estate
               </a>
               <a
-                href="tel:+442012345678"
+                href="tel:+441322643289"
                 className="block font-body text-[13px] text-white/50 transition-colors duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-400"
               >
-                +44 (0) 20 1234 5678
+                +44 (0)1322 643289
               </a>
             </div>
 

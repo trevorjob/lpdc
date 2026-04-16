@@ -36,7 +36,7 @@ const PILLARS = [
       'Target yield and capital growth modelling',
       'Tailored strategy across property types and regions',
     ],
-    image:     'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&h=1100&fit=crop&q=80',
+    image:     'https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=900&h=1100&fit=crop&q=80',
     imageAlt:  'UK city skyline representing high-growth investment regions',
     imageLeft: true,
     bg:        'bg-neutral-50',
@@ -397,7 +397,7 @@ function ProcessSection({ shouldReduce }: { shouldReduce: boolean }) {
                 style={shouldReduce ? {} : { y: imgY }}
               >
                 <Image
-                  src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&h=1100&fit=crop&q=80"
+                  src="https://images.unsplash.com/photo-1762205059931-7c8fbb749e3b?w=800&h=1100&fit=crop&q=80"
                   alt="UK residential investment property"
                   fill
                   className="object-cover"
@@ -509,7 +509,7 @@ function WhySection({ shouldReduce }: { shouldReduce: boolean }) {
                 style={shouldReduce ? {} : { y: imgY }}
               >
                 <Image
-                  src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&h=1100&fit=crop&q=80"
+                  src="https://images.unsplash.com/photo-1663043546936-531f379af8f2?w=800&h=1100&fit=crop&q=80"
                   alt="Contemporary UK residential property"
                   fill
                   className="object-cover"
@@ -630,7 +630,7 @@ function DarkCTA({ shouldReduce }: { shouldReduce: boolean }) {
       {/* Background image */}
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1600&h=900&fit=crop&q=80"
+          src="https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=1600&h=900&fit=crop&q=80"
           alt=""
           fill
           className="object-cover"

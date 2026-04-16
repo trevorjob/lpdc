@@ -30,10 +30,10 @@ const fadeVariants: Variants = {
 }
 
 const IMAGES = [
-  { src: '/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg',                                              alt: 'UK residential property exterior'    },
   { src: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&h=800&fit=crop&q=80',   alt: 'Contemporary UK house'               },
+  { src: 'https://images.unsplash.com/photo-1627245084666-199325217d5b',                                              alt: 'UK residential property exterior'    },
   { src: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&h=800&fit=crop&q=80',   alt: 'Residential property in high-growth area' },
-  { src: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&h=800&fit=crop&q=80',   alt: 'UK city skyline'                     },
+  { src: 'https://images.unsplash.com/photo-1529655683826-aba9b3e77383?w=600&h=800&fit=crop&q=80',   alt: 'UK city skyline'                     },
 ]
 
 const AREA_CLASSES = [

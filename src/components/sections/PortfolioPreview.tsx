@@ -21,7 +21,7 @@ const slides: SlideData[] = [
     subtitle:       'HMO Investment, Manchester',
     description:
       'Premium HMO development in Manchester\'s Salford Quays district. Fully refurbished and consistently at 97% occupancy, with strong yields backed by professional management.',
-    imageUrl:       '/images/sayan-nath-i7KUmMOiNFo-unsplash.jpg',
+    imageUrl:       'https://images.unsplash.com/photo-1578687047263-631a67f01e0d?w=1200&h=900&fit=crop&q=80',
     projectedYield: '8.2%',
     status:         'Available',
     slug:           'the-riverside-apartments',
@@ -31,7 +31,7 @@ const slides: SlideData[] = [
     subtitle:       'Terraced Portfolio, Birmingham',
     description:
       'Three terraced houses in Birmingham\'s Jewellery Quarter. Below-market-value acquisition in a high-growth area with a decade of consistent capital appreciation.',
-    imageUrl:       'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&h=1200&fit=crop&q=80',
+    imageUrl:       'https://images.unsplash.com/photo-1652013368406-ddeac5542742?w=1200&h=900&fit=crop&q=80',
     projectedYield: '7.6%',
     status:         'Available',
     slug:           'laurel-grove-portfolio',
@@ -41,7 +41,7 @@ const slides: SlideData[] = [
     subtitle:       'Semi-Detached, Leeds',
     description:
       'Sought-after Leeds suburb, acquired 18% below market value. Strong local rental demand and scope for light refurbishment to add immediate capital value.',
-    imageUrl:       'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&h=1200&fit=crop&q=80',
+    imageUrl:       'https://images.unsplash.com/photo-1710883727446-0bf5692fd709?w=1200&h=900&fit=crop&q=80',
     projectedYield: '6.8%',
     status:         'Under Offer',
     slug:           'oakfield-semi',
@@ -185,18 +185,20 @@ export function PortfolioPreview() {
 
           {/* CTAs */}
           <div className={`mb-10 flex items-center gap-5 ${textCls}`}>
-            <Link
-              href={`/portfolio/${slide.slug}`}
+            {/* <Link
+              href="/portfolio"
               className="group inline-flex items-center gap-2.5 bg-sage-500 px-6 py-3 font-body text-sm font-medium tracking-wide text-white transition-colors duration-300 hover:bg-sage-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2"
             >
               View Property
               <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
-            </Link>
+            </Link> */}
             <Link
               href="/portfolio"
-              className="font-body text-sm font-medium text-neutral-500 transition-colors duration-300 hover:text-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2"
+              className="group inline-flex items-center gap-2.5 bg-sage-500 px-6 py-3 font-body text-sm font-medium tracking-wide text-white transition-colors duration-300 hover:bg-sage-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2"
             >
-              All Properties
+              View All Properties
+                            <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
+
             </Link>
           </div>
 

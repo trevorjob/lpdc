@@ -20,7 +20,7 @@ const NEXT_STEPS = [
   {
     number: '01',
     title:  'We review your details',
-    body:   'Within 48 hours a member of the team will review your submission and identify the most relevant current opportunities.',
+    body:   'Tell us about your investment goals. Our team is available 24/7 and will connect with you shortly.',
   },
   {
     number: '02',
@@ -141,18 +141,18 @@ function FormSection({ shouldReduce }: { shouldReduce: boolean }) {
               transition={{ duration: 0.6, delay: 0.7, ease: EASE_SMOOTH }}
             >
               <a
-                href="mailto:hello@luliproperties.co.uk"
+                href="mailto:hello@lpdc.com"
                 className="flex items-center gap-3 font-body text-sm text-neutral-600 transition-colors duration-200 hover:text-sage-600"
               >
                 <Mail className="h-4 w-4 shrink-0 text-sage-500" />
-                hello@luliproperties.co.uk
+                hello@lpdc.estate
               </a>
               <a
-                href="tel:+442012345678"
+                href="tel:+441322643289"
                 className="flex items-center gap-3 font-body text-sm text-neutral-600 transition-colors duration-200 hover:text-sage-600"
               >
                 <Phone className="h-4 w-4 shrink-0 text-sage-500" />
-                +44 (0) 20 1234 5678
+                +44 (0)1322 643289
               </a>
             </motion.div>
           </motion.div>
@@ -192,14 +192,25 @@ function ContactForm({ shouldReduce }: { shouldReduce: boolean }) {
     setFields(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setLoading(true)
-    /* Simulate async submission */
-    setTimeout(() => {
-      setLoading(false)
+    try {
+      const res = await fetch('/api/contact', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(fields),
+      })
+      if (!res.ok) {
+        const data = await res.json() as { error?: string }
+        throw new Error(data.error ?? 'Submission failed.')
+      }
       setSubmitted(true)
-    }, 900)
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   if (submitted) {
@@ -352,7 +363,7 @@ function SuccessState({ shouldReduce }: { shouldReduce: boolean }) {
         We have received your details.
       </h3>
       <p className="mb-8 max-w-[40ch] font-body text-sm leading-relaxed text-neutral-600">
-        A member of the Luli Properties team will be in touch within 48 hours to discuss your investment goals.
+        A member of the Luli Properties team will be in touch soon to discuss your investment goals.
       </p>
 
       <p className="font-body text-xs text-neutral-400">
