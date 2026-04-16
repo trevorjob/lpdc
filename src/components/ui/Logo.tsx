@@ -40,16 +40,14 @@ export function Logo({ variant = 'light', className, iconSize = 40 }: LogoProps)
           isDark ? 'bg-white/20' : 'bg-neutral-300'
         )}
       />
-
-      {/* Company name */}
-      <div className="min-w-0 transition-opacity duration-300 group-hover:opacity-80">
-        <p className={cn('font-body text-[14px] font-medium leading-tight tracking-normal', isDark ? 'text-white' : 'text-sage-700')}>
-          Luli Properties
-        </p>
-        <p className={cn('font-body text-[14px] font-medium leading-tight tracking-normal', isDark ? 'text-white' : 'text-sage-700')}>
-          &amp; Dev. Co. Ltd.
-        </p>
-      </div>
+   <div className="font-body text-lg leading-[1] text-ink-900">
+  <span className={isDark ? 'text-white' : 'text-sage-700'}>
+              Luli Properties<br />
+    <span className={isDark ? 'text-white' : 'text-sage-700'}>
+      &amp; Dev. Co. Ltd.
+    </span>
+  </span>
+</div>
     </Link>
   )
 }
