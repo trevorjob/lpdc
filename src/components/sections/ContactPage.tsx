@@ -141,11 +141,11 @@ function FormSection({ shouldReduce }: { shouldReduce: boolean }) {
               transition={{ duration: 0.6, delay: 0.7, ease: EASE_SMOOTH }}
             >
               <a
-                href="mailto:hello@lpdc.com"
+                href="mailto:team@lpdc.com"
                 className="flex items-center gap-3 font-body text-sm text-neutral-600 transition-colors duration-200 hover:text-sage-600"
               >
                 <Mail className="h-4 w-4 shrink-0 text-sage-500" />
-                hello@lpdc.estate
+                team@lpdc.estate
               </a>
               <a
                 href="tel:+441322643289"

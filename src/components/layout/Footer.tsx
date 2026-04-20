@@ -62,10 +62,10 @@ export function Footer() {
 
             <div className="space-y-3">
               <a
-                href="mailto:hello@lpdc.estate"
+                href="mailto:team@lpdc.estate"
                 className="block font-body text-[13px] text-white/50 transition-colors duration-300 hover:text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold-400"
               >
-                hello@lpdc.estate
+                team@lpdc.estate
               </a>
               <a
                 href="tel:+441322643289"
