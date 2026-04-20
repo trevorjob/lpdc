@@ -173,28 +173,68 @@ function FormSection({ shouldReduce }: { shouldReduce: boolean }) {
 
 /* ── ContactForm ───────────────────────────────── */
 
-function ContactForm({ shouldReduce }: { shouldReduce: boolean }) {
-  const [submitted, setSubmitted] = useState(false)
-  const [loading,   setLoading]   = useState(false)
+type Fields = {
+  name:     string
+  email:    string
+  phone:    string
+  budget:   string
+  message:  string
+  existing: string
+}
 
-  const [fields, setFields] = useState({
-    name:    '',
-    email:   '',
-    phone:   '',
-    budget:  '',
-    message: '',
+type FieldErrors = Partial<Record<keyof Fields, string>>
+
+function validate(fields: Fields): FieldErrors {
+  const errors: FieldErrors = {}
+  if (!fields.name.trim())  errors.name  = 'Please enter your full name.'
+  if (!fields.email.trim()) errors.email = 'Please enter your email address.'
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) errors.email = 'Please enter a valid email address.'
+  if (!fields.budget)       errors.budget = 'Please select an investment budget.'
+  return errors
+}
+
+function ContactForm({ shouldReduce }: { shouldReduce: boolean }) {
+  const [submitted,  setSubmitted]  = useState(false)
+  const [loading,    setLoading]    = useState(false)
+  const [submitError, setSubmitError] = useState('')
+  const [errors,     setErrors]     = useState<FieldErrors>({})
+
+  const [fields, setFields] = useState<Fields>({
+    name:     '',
+    email:    '',
+    phone:    '',
+    budget:   '',
+    message:  '',
     existing: '',
   })
+
+  function syncField(name: keyof Fields, value: string) {
+    setFields(prev => ({ ...prev, [name]: value }))
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: undefined }))
+  }
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) {
-    setFields(prev => ({ ...prev, [e.target.name]: e.target.value }))
+    syncField(e.target.name as keyof Fields, e.target.value)
+  }
+
+  function handleInput(
+    e: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) {
+    const target = e.currentTarget
+    syncField(target.name as keyof Fields, target.value)
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    const fieldErrors = validate(fields)
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors)
+      return
+    }
     setLoading(true)
+    setSubmitError('')
     try {
       const res = await fetch('/api/contact', {
         method:  'POST',
@@ -207,7 +247,7 @@ function ContactForm({ shouldReduce }: { shouldReduce: boolean }) {
       }
       setSubmitted(true)
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+      setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -225,27 +265,29 @@ function ContactForm({ shouldReduce }: { shouldReduce: boolean }) {
     >
       {/* Name + Email */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <Field label="Full Name" required>
+        <Field label="Full Name" required error={errors.name}>
           <input
             type="text"
             name="name"
             value={fields.name}
             onChange={handleChange}
-            required
+            onInput={handleInput}
+            autoComplete="name"
             placeholder="Jane Smith"
-            className={inputCls}
+            className={inputCls(!!errors.name)}
           />
         </Field>
 
-        <Field label="Email Address" required>
+        <Field label="Email Address" required error={errors.email}>
           <input
             type="email"
             name="email"
             value={fields.email}
             onChange={handleChange}
-            required
+            onInput={handleInput}
+            autoComplete="email"
             placeholder="jane@example.com"
-            className={inputCls}
+            className={inputCls(!!errors.email)}
           />
         </Field>
       </div>
@@ -258,18 +300,19 @@ function ContactForm({ shouldReduce }: { shouldReduce: boolean }) {
             name="phone"
             value={fields.phone}
             onChange={handleChange}
+            onInput={handleInput}
+            autoComplete="tel"
             placeholder="+44 7700 000000"
-            className={inputCls}
+            className={inputCls(false)}
           />
         </Field>
 
-        <Field label="Investment Budget" required>
+        <Field label="Investment Budget" required error={errors.budget}>
           <select
             name="budget"
             value={fields.budget}
             onChange={handleChange}
-            required
-            className={`${inputCls} cursor-pointer`}
+            className={`${inputCls(!!errors.budget)} cursor-pointer`}
           >
             {BUDGET_OPTIONS.map(opt => (
               <option key={opt.value} value={opt.value} disabled={opt.value === ''}>
@@ -308,11 +351,17 @@ function ContactForm({ shouldReduce }: { shouldReduce: boolean }) {
           name="message"
           value={fields.message}
           onChange={handleChange}
+          onInput={handleInput}
           rows={4}
           placeholder="What are you hoping to achieve? Any properties or regions in mind?"
-          className={`${inputCls} resize-none`}
+          className={`${inputCls(false)} resize-none`}
         />
       </Field>
+
+      {/* Server-level error */}
+      {submitError && (
+        <p className="font-body text-xs text-red-600">{submitError}</p>
+      )}
 
       {/* Submit */}
       <button
@@ -382,16 +431,24 @@ function SuccessState({ shouldReduce }: { shouldReduce: boolean }) {
 
 /* ── helpers ───────────────────────────────────── */
 
-const inputCls =
-  'w-full border border-neutral-300 bg-white px-4 py-3 font-body text-sm text-neutral-800 placeholder:text-neutral-400 transition-colors duration-200 hover:border-neutral-400 focus:border-gold-400 focus:outline-none focus:ring-1 focus:ring-gold-400/30'
+function inputCls(hasError: boolean) {
+  return [
+    'w-full border bg-white px-4 py-3 font-body text-sm text-neutral-800 placeholder:text-neutral-400 transition-colors duration-200 focus:outline-none focus:ring-1',
+    hasError
+      ? 'border-red-400 focus:border-red-400 focus:ring-red-400/20'
+      : 'border-neutral-300 hover:border-neutral-400 focus:border-gold-400 focus:ring-gold-400/30',
+  ].join(' ')
+}
 
 function Field({
   label,
   required,
+  error,
   children,
 }: {
   label:     string
   required?: boolean
+  error?:    string
   children:  React.ReactNode
 }) {
   return (
@@ -401,6 +458,9 @@ function Field({
         {required && <span className="ml-1 text-gold-400">*</span>}
       </label>
       {children}
+      {error && (
+        <p className="mt-1.5 font-body text-xs text-red-600">{error}</p>
+      )}
     </div>
   )
 }

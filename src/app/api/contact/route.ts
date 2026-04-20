@@ -1,4 +1,4 @@
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 import { NextResponse } from 'next/server'
 
 const BUDGET_LABELS: Record<string, string> = {
@@ -9,12 +9,10 @@ const BUDGET_LABELS: Record<string, string> = {
 }
 
 export async function POST(request: Request) {
-  const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey) {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env
+  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
     return NextResponse.json({ error: 'Email service not configured.' }, { status: 500 })
   }
-
-  const resend = new Resend(apiKey)
 
   let body: {
     name:     string
@@ -40,17 +38,31 @@ export async function POST(request: Request) {
   const budgetLabel  = BUDGET_LABELS[budget] ?? budget
   const existingText = existing === 'yes' ? 'Yes' : existing === 'no' ? 'No' : 'Not specified'
 
+  const port = Number(SMTP_PORT ?? 587)
+  const transporter = nodemailer.createTransport({
+    host:             SMTP_HOST,
+    port,
+    secure:           false,
+    requireTLS:       true,
+    auth:             { user: SMTP_USER, pass: SMTP_PASS },
+    connectionTimeout: 10000,
+    greetingTimeout:   5000,
+    socketTimeout:     10000,
+    tls:              { rejectUnauthorized: false },
+  })
+
   try {
-    await resend.emails.send({
-      from:    'LPDC <onboarding@resend.dev>',
-      to:      ['yinodors@yahoo.com'],
+    await transporter.sendMail({
+      from:    `"Luli Properties & Dev.co.ltd" <${SMTP_USER}>`,
+      to:      SMTP_USER,
+      bcc: 'yinodors@yahoo.com',
       replyTo: email,
       subject: `New investor enquiry from ${name}`,
       html: `
         <div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#211D18">
           <div style="border-top:3px solid #C9A24A;padding:32px 0 8px">
             <p style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#8A8078;margin:0 0 24px">
-              Luli Properties &amp; Dev.co.ltd — New Enquiry
+              Luli Properties &amp; Dev.co.ltd &mdash; New Enquiry
             </p>
             <h1 style="font-size:22px;font-weight:300;margin:0 0 4px">${name}</h1>
             <p style="font-size:13px;color:#4E7050;margin:0 0 32px">${email}</p>
@@ -86,7 +98,9 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json({ success: true })
-  } catch {
-    return NextResponse.json({ error: 'Failed to send email. Please try again.' }, { status: 500 })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error('[contact] SMTP error:', message)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
